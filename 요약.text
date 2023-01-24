@@ -1,0 +1,336 @@
+1.Router
+
+react-router-dom
+
+npm install react-router-dom@6
+
+index.js에 추가
+
+
+import { BrowserRouter } from 'react-router-dom';
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(
+  <React.StrictMode>
+    <BrowserRouter> // <App/>을 BrowserRouter로 감싸기
+      <App />
+    </BrowserRouter>
+  </React.StrictMode>
+);
+
+// If you want to start measuring performance in your app, pass a function
+// to log results (for example: reportWebVitals(console.log))
+// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
+reportWebVitals();
+
+페이지 이동 
+1.<Link to="/">
+2.useNavigate 변수등록
+onClick={()=>{useNavigate('/')}
+
+nestedRouter
+Outlet<= 부모 route에 구멍뚫어서 자식들 넣는거
+ <Route path='/detail/:id' element={ <Detail shoes ={ shoes }/>}/>
+ 여러개의 파라미터주소를만들때
+ id값에따른 변수값사용시 let {id} = useParams(); 써주면됨
+
+
+ style components 사용
+ html에 style주는거라 페이지 로딩시간 단축  
+ 해당 페이지영역만 css보여주는거라 로딩시간 단축
+  npm install styled-components
+
+styled.button`
+    background : yello;
+    color : black;
+    padding : 10px
+`
+let YelloBtn = styled.button`
+    background : ${ props => props.bg };
+    color : black;
+    padding : 10px
+`
+ <YelloBtn bg="blue">stylecomponents사용</YelloBtn>
+ 구멍뚫어서 일부분 수정가능
+
+
+ <컴포넌트의 Lifecycle>
+
+ 페이지에 장착되기도하고 mount 업데이트도되고 udate
+ 필요없으면 제거됨 unmount
+
+
+ mount,update시 코드 실행 
+ useEffect!!
+html 랜더링 후 동작한다.=>빠릿하게 html보여줄듯
+1.어려운연산
+2.서버에서 데이터가져오는 작업
+3.타이머
+
+ function x(props){
+    useEffect(()=>{
+        console.log('안녕)
+    })
+ }
+
+ 디버깅을 위해서 2번실행됨 실제 사이트 배포시 문제 x
+
+ index.js가서 <React.StrictMode>없애면됨
+
+useEffect(()=>{
+        코드 1 ex)서버로 데이터 요청하는 코드
+        return()=>{
+            코드2 ex)코드 1을 제거해주세요라는 코드 작성 => 계속 서버데이터요청으로인해 버그발생차단
+        }//unmount시 1회코드실행하고싶을때
+    );
+useEffect(()=>{}, []) //대괊호 추가하면 mount시 코드 1회만 실행. 대괄호안에 count라는 변수 넣으면
+                        count라는 state변경시에만 실행된다.
+코드1 html랜더링 후 실행 
+코드2 useEffect동작전에 실행됨
+html랜더링 => 코드 2 => 코드 1
+
+<Ajax>
+
+ajax를 사용하면 새로고침없이도 get/post요청가능
+
+옵션 3개중 한개선택
+1.XMLHttpRequest
+2.fetch()
+3.axios
+
+axios
+npm install axios
+import
+<>
+let copy = [...shoes, ...결과.data];
+
+기존배열에 추가
+<>
+if (count <3){
+                axios.get(``)
+                .then((결과)=>{
+                  let copy = [...shoes, ...결과.data];
+                  setShoes(copy);
+                  })
+                .catch(()=>{
+                  alert('데이터 전송 실패!')
+                })
+              }else{
+                alert('더이상 자료 x');
+              }
+            }}>더보기</button>
+axios.post('/',{object})
+
+동시에 ajax요청 여러개할때
+Promise.all([axios.get('/url1),axios.get('/url2')])
+
+Json 데이터 (따옴표가 쳐진 데이터) axios가 arr로바꿔줌
+
+ function TabContent({탭}){
+        return  [<div>내용0</div>,<div>내용1</div>,<div>내용2</div>][0]
+    } //좋은방법 나중에 써먹기.
+
+
+  f리액트의 automatic batching기능
+  state변경함수 두개 같은공간에쓰면 한번에 처리해버림
+  => 애니매이션주기위해 settimeout시간차를 둬야함
+
+
+  <Context API>
+  성능 떨어지고 어려워서  잘 안씀 + 쓸데없는것까지 재랜더링됨
+  외부 라이브러리 Redux를 쓴다.
+  사용법
+  import {createContext,useState} from "react"
+  export let Context1 = createContext() //state보관함
+  function App(){
+    let [재고] =ues([10,11,12])
+  
+  
+  <Context1.Provider value={{재고,shoes}}>
+   <Detail/> =>Detail 컴포넌트에서 props사용가능
+  </Context1.Provider>
+  
+  }
+
+  =>Detail.js
+  
+  import {Context1} from './../App.js'
+
+  function Detail(){
+    let { 재고 }  = useContext(Context1)
+    { 재고} => 101112 출력됨
+  }
+
+
+<Redux> 
+컴포넌트간 state공유 편해짐
+
+1.npm install @reduxjs/toolkit react-redux
+2.store.js 파일 생성
+//state보관함
+3.store.js파일에 
+import { configureStore } from '@reduxjs/toolkit'
+
+export default configureStore({
+    reducer: { }
+})
+4.index.js
+import store from './store';
+
+<Provider store={store}> //context api랑 비슷함
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
+</Provider>
+감싸기
+
+redux state 변경법 
+state 수정해주는 함수 만들고
+그 함수 실행해달라고 store.js 에 요청
+
+locatstrage이용 (최근본 상품 등등)
+JSON 변환하면서 이용해야함.
+
+localStorage.setItem('data', JSON.stringify(obj))
+let 꺼낸거 = JSON.parse(localStorage.getItem('data))
+
+useEffect(()=>{
+        //데이터를 수정=> 새로만드는게아니라 기존데이터 가져와서 추가하는형식으로 코드짜야함
+
+            let 꺼낸것 = JSON.parse(localStorage.getItem('watched'));
+            꺼낸것.push(찾은상품.id)
+            꺼낸것 = new Set(꺼낸것) //중복되는값 잡아줌!! 유용할듯
+            꺼낸것 = Array.from(꺼낸것)
+            localStorage.setItem('watched',JSON.stringify(꺼낸것))    
+
+    },[])
+
+
+<React-query>
+실시간 데이터를 계속가져와야하는 사이트들이 쓴다
+sns / 코인거래소
+1.npm install react-query
+
+2.index.js
+
+import { QueryClient,QueryClientProvider } from 'react-query';
+
+const queryClient = new QueryClient()
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(
+  <React.StrictMode>
+    <QueryClientProvider client={queryClient}>
+      <Provider store={store}>
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+      </Provider>
+    </QueryClientProvider>
+  </React.StrictMode>
+
+axios에서가져오는데이터 느리니 시간두고기다리기
+
+장점 1. state만들필요없다 props전송도안해도됨
+    2. 틈만나면 자동으로 재요청해준다.  
+    3. ajax결과 캐싱가능 (결과를 기록 )
+
+<성능개선 Tip>
+ReactDevTools
+Redux ReactDevTools
+lazy import
+const Detail =lazy(() => import('./routes/Detail.js'));
+const Cart =lazy(() => import('./routes/Cart.js'));
+장점=> 메인페이지 로딩속도 up;
+단점=> 해당 컴포넌트 로딩속도 down;
+보통 suspense로 routes감싸주고 로딩화면 구현함 
+
+2.memo  
+props가 변할때만 재랜더링해준다.
+
+let 자식 = memo( function(){
+  dasdsa
+})
+간단한 부모 컴포넌트 
+
+function 부모(){
+  return(
+    <자식 props = {props}></자식>
+  )
+}
+기존 props랑 신규 props를 비교 재랜더링을 결정
+=> props가 길고 복잡하면 계속비교하므로 안좋음
+무거운 컴포넌트에만 쓰기  (사실상 내가 쓸일은 거의없음)
+
+useMemo()
+
+function 함수(){
+  return 반복문 9억번 돌림
+}
+
+function 부모(){
+  let result = useMemo(()=>{return 함수(},[stae])
+  //컴포넌트 랜더링시 1회만 실행해줌
+}
+useEffect html실행이 다되고 실행됨
+useMemo는 랜더링 되고나서 실행됨
+
+react
+18번전이후
+<batching기능>
+ajax나 settimeout내부의
+state변경함수 어디있든 잘 동작함
+
+<useTransiton으로 느린 컴포넌트 성능향상가능>
+import { useTransition,useDeferredvalue} from react;
+
+
+function App(){
+  let[name, setName] =useState('')
+  let[isPending,startTransition] = useTransition()
+  let state = useDeferredvalue(name) //useDeferredvalue로 문제부분을 감싸 사용 
+                                    //useTransition이랑 비슷함
+ 
+  <input onChange={(e)=>{
+    startTransition(()=>{
+       setName(e.target.value) //성능저하를 일으키는 요소를 감싼다.
+    })
+  >
+{ 
+  isPending ? '로딩중': 
+  a.map(()=>{
+    return <div>{state}<div>
+  })
+}
+
+}
+
+동작원리 => 코드시작을 뒤로 늦춰줌  
+ex)input에 a작성시 a먼저 보여주고
+한가할때 성능저하 일으키는 요소를 실행시켜준다.
+실행시점 조절
+
+
+PWA 웹사이트를 앱처럼 설치해서 쓸 수 있음
+npx create-react-app 프로젝트명 --template cra-template-pwa
+
+
+자바스크립트는 이상한 함수들을 사용하면 asynchronous 하게 코드실행이 가능합니다. 번역하면 비동기적인데 
+
+ajax, 이벤트리스너, setTimeout 이런 함수들을 쓸 때 그런 현상이 일어납니다.
+
+이런 함수들은 처리시간이 오래걸립니다. ajax를 예로 들면 인터넷 상황이 안좋으면 코드 실행이 오래걸리겠죠? 10초도 걸릴 수 있습니다. 
+
+그래서 ajax 요청하는 코드들은 순차적으로 실행되지 않고 완료되면 실행됩니다.
+
+
+ state 변경함수들은 전부 asynchronous (비동기적) 으로 처리됩니다.
+ 그니까 setName()이 오래걸리면 이거 제껴두고 다른 밑에 있는 코드들부터 실행한다는 겁니다.
+
+해결책은 useEffect입니다. 
+
+useEffect(()=>{
+ setCount();
+},[count]) 순차적으로 실행가능
+
+변경시 HTML 자동 재렌더링이 필요한 변수들은 state로 만들기
